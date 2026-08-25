@@ -28,7 +28,7 @@ export default function TableauDeBord() {
     <MiseEnPage>
       <h1 style={{ marginBottom: "8px" }}>Tableau de bord</h1>
       <p style={{ color: "#6b7280", marginBottom: "24px" }}>
-        Vue d'ensemble du CNFPATEL Guinée.
+        Vue d'ensemble du LMS National.
       </p>
 
       {erreur && <p style={{ color: "#b91c1c" }}>{erreur}</p>}
@@ -55,7 +55,7 @@ export default function TableauDeBord() {
 const styles = {
   grille: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
     gap: "16px",
   },
   carte: {
@@ -74,6 +74,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    flexShrink: 0,
   },
   valeur: {
     fontSize: "24px",
@@ -87,5 +88,3 @@ const styles = {
     margin: "2px 0 0",
   },
 };
-
-

@@ -1,9 +1,11 @@
 ﻿import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import MiseEnPage from "../components/MiseEnPage";
+import { useIsMobile } from "../hooks/useIsMobile";
 import api from "../api/client";
 
 export default function Formations() {
+  const estMobile = useIsMobile();
   const [formations, setFormations] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState(null);
@@ -48,7 +50,7 @@ export default function Formations() {
     <MiseEnPage>
       <h1 style={{ marginBottom: "24px" }}>Formations</h1>
 
-      <div style={styles.grille}>
+      <div style={styles.grille(estMobile)}>
         <div style={styles.carte}>
           <h2 style={styles.titreCarte}>Nouvelle formation</h2>
           <form onSubmit={creerFormation}>
@@ -81,6 +83,15 @@ export default function Formations() {
             <p style={{ color: "#6b7280" }}>Chargement...</p>
           ) : formations.length === 0 ? (
             <p style={{ color: "#6b7280" }}>Aucune formation pour le moment.</p>
+          ) : estMobile ? (
+            <div>
+              {formations.map((f) => (
+                <Link key={f._id} to={`/formations/${f._id}`} style={styles.carteFormationMobile}>
+                  <strong>{f.titre}</strong>
+                  <span style={styles.portee}>{f.regionId ? "Régionale" : "Nationale"}</span>
+                </Link>
+              ))}
+            </div>
           ) : (
             <table style={styles.tableau}>
               <thead>
@@ -110,12 +121,12 @@ export default function Formations() {
 }
 
 const styles = {
-  grille: {
+  grille: (mobile) => ({
     display: "grid",
-    gridTemplateColumns: "360px 1fr",
+    gridTemplateColumns: mobile ? "1fr" : "360px 1fr",
     gap: "24px",
     alignItems: "start",
-  },
+  }),
   carte: {
     backgroundColor: "white",
     borderRadius: "12px",
@@ -175,5 +186,20 @@ const styles = {
     color: "#1F3864",
     fontWeight: 600,
     textDecoration: "none",
+  },
+  carteFormationMobile: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    padding: "14px",
+    borderRadius: "10px",
+    border: "1px solid #e5e7eb",
+    marginBottom: "10px",
+    textDecoration: "none",
+    color: "#1F3864",
+  },
+  portee: {
+    fontSize: "12px",
+    color: "#6b7280",
   },
 };
