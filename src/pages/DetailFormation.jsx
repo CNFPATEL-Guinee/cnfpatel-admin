@@ -23,6 +23,9 @@ export default function DetailFormation() {
   const [lienDirect, setLienDirect] = useState("");
   const [formateurChoisi, setFormateurChoisi] = useState("");
 
+  // Édition d une classe virtuelle existante.
+  const [classeEnEdition, setClasseEnEdition] = useState(null);
+
   const [titreEnreg, setTitreEnreg] = useState("");
   const [fichierEnreg, setFichierEnreg] = useState(null);
   const [classeChoisie, setClasseChoisie] = useState("");
@@ -83,22 +86,42 @@ export default function DetailFormation() {
     }
   }
 
-  async function creerClasse(e) {
+  function reinitialiserFormClasse() {
+    setTitreClasse("");
+    setDateHeure("");
+    setLienDirect("");
+    setFormateurChoisi("");
+    setClasseEnEdition(null);
+  }
+
+  function commencerEdition(classe) {
+    setClasseEnEdition(classe._id);
+    setTitreClasse(classe.titre);
+    // Convertit la date ISO en format attendu par l input datetime-local.
+    setDateHeure(new Date(classe.dateHeure).toISOString().slice(0, 16));
+    setLienDirect(classe.lienDirect);
+    setFormateurChoisi(classe.formateurId || "");
+    window.scrollTo({ top: document.getElementById("form-classe")?.offsetTop - 20, behavior: "smooth" });
+  }
+
+  async function soumettreClasse(e) {
     e.preventDefault();
     try {
-      await api.post(`/formations/${id}/classes`, {
+      const donnees = {
         titre: titreClasse,
         dateHeure: new Date(dateHeure).toISOString(),
         lienDirect,
         formateurId: formateurChoisi || undefined,
-      });
-      setTitreClasse("");
-      setDateHeure("");
-      setLienDirect("");
-      setFormateurChoisi("");
+      };
+      if (classeEnEdition) {
+        await api.patch(`/formations/${id}/classes/${classeEnEdition}`, donnees);
+      } else {
+        await api.post(`/formations/${id}/classes`, donnees);
+      }
+      reinitialiserFormClasse();
       await chargerTout();
     } catch (e) {
-      setErreur("Erreur lors de la création de la classe virtuelle.");
+      setErreur(classeEnEdition ? "Erreur lors de la modification de la classe." : "Erreur lors de la création de la classe virtuelle.");
     }
   }
 
@@ -225,11 +248,19 @@ export default function DetailFormation() {
         </div>
       </section>
 
-      <section style={styles.section}>
+      <section style={styles.section} id="form-classe">
         <h2 style={styles.titreSection}>Classes virtuelles</h2>
         <div style={styles.grille}>
           <div style={styles.carte}>
-            <form onSubmit={creerClasse}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+              <h3 style={{ margin: 0, fontSize: "14px" }}>
+                {classeEnEdition ? "Modifier la session" : "Nouvelle session"}
+              </h3>
+              {classeEnEdition && (
+                <button onClick={reinitialiserFormClasse} style={styles.lienAnnuler}>Annuler</button>
+              )}
+            </div>
+            <form onSubmit={soumettreClasse}>
               <label style={styles.label}>Titre de la session</label>
               <input style={styles.input} value={titreClasse} onChange={(e) => setTitreClasse(e.target.value)} required />
               <label style={styles.label}>Date et heure</label>
@@ -243,13 +274,15 @@ export default function DetailFormation() {
                   <option key={f._id} value={f._id}>{f.prenom} {f.nom}</option>
                 ))}
               </select>
-              <button style={styles.bouton}>Programmer la session</button>
+              <button style={styles.bouton}>
+                {classeEnEdition ? "Enregistrer les modifications" : "Programmer la session"}
+              </button>
             </form>
           </div>
           <div style={styles.carte}>
             {classes.length === 0 ? <p style={styles.gris}>Aucune classe programmée.</p> : (
               <table style={styles.tableau}>
-                <thead><tr><th style={styles.th}>Titre</th><th style={styles.th}>Date</th><th style={styles.th}>Formateur</th><th style={styles.th}></th><th style={styles.th}></th><th style={styles.th}></th></tr></thead>
+                <thead><tr><th style={styles.th}>Titre</th><th style={styles.th}>Date</th><th style={styles.th}>Formateur</th><th style={styles.th}></th><th style={styles.th}></th><th style={styles.th}></th><th style={styles.th}></th></tr></thead>
                 <tbody>
                   {classes.map((c) => (
                     <tr key={c._id}>
@@ -261,6 +294,9 @@ export default function DetailFormation() {
                       </td>
                       <td style={styles.td}>
                         <Link to={`/presences/${c._id}`} style={styles.lienGerer}>Présences →</Link>
+                      </td>
+                      <td style={styles.td}>
+                        <button onClick={() => commencerEdition(c)} style={styles.boutonModifier}>✏️</button>
                       </td>
                       <td style={styles.td}>
                         <button onClick={() => supprimerClasse(c._id)} style={styles.boutonSupprimer}>🗑</button>
@@ -347,7 +383,9 @@ const styles = {
   astuceEnvoi: { fontSize: "12px", color: "#1F3864", fontWeight: 600, marginBottom: "12px" },
   bouton: { width: "100%", padding: "10px", backgroundColor: "#1F3864", color: "white", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" },
   boutonVoir: { padding: "4px 10px", backgroundColor: "#DCE6F1", color: "#1F3864", border: "none", borderRadius: "6px", fontSize: "12px", fontWeight: 600, cursor: "pointer" },
+  boutonModifier: { padding: "4px 10px", backgroundColor: "#fef9c3", color: "#854d0e", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
   boutonSupprimer: { padding: "4px 10px", backgroundColor: "#fef2f2", color: "#dc2626", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
+  lienAnnuler: { background: "none", border: "none", color: "#6b7280", fontSize: "12px", cursor: "pointer", textDecoration: "underline" },
   gris: { color: "#6b7280" },
   blocModule: { padding: "14px", border: "1px solid #e5e7eb", borderRadius: "10px", marginBottom: "12px" },
   enTeteModule: { display: "flex", justifyContent: "space-between", alignItems: "center" },
