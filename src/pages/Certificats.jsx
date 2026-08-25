@@ -7,12 +7,32 @@ export default function Certificats() {
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState(null);
 
+  async function chargerCertificats() {
+    setChargement(true);
+    try {
+      const r = await api.get("/certificats/tous");
+      setCertificats(r.data);
+      setErreur(null);
+    } catch (e) {
+      setErreur("Impossible de charger les certificats.");
+    } finally {
+      setChargement(false);
+    }
+  }
+
   useEffect(() => {
-    api.get("/certificats/tous")
-      .then((r) => setCertificats(r.data))
-      .catch(() => setErreur("Impossible de charger les certificats."))
-      .finally(() => setChargement(false));
+    chargerCertificats();
   }, []);
+
+  async function supprimerCertificat(id) {
+    if (!window.confirm("Révoquer ce certificat ? L'apprenant ne le verra plus dans son application.")) return;
+    try {
+      await api.delete(`/certificats/${id}`);
+      await chargerCertificats();
+    } catch (e) {
+      setErreur("Erreur lors de la révocation du certificat.");
+    }
+  }
 
   const formatDate = (d) =>
     new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
@@ -39,6 +59,7 @@ export default function Certificats() {
                 <th style={styles.th}>Téléphone</th>
                 <th style={styles.th}>Formation</th>
                 <th style={styles.th}>Date de délivrance</th>
+                <th style={styles.th}></th>
               </tr>
             </thead>
             <tbody>
@@ -50,6 +71,9 @@ export default function Certificats() {
                   <td style={styles.td}>{c.utilisateurId?.telephone}</td>
                   <td style={styles.td}>{c.formationId?.titre}</td>
                   <td style={styles.td}>{formatDate(c.createdAt)}</td>
+                  <td style={styles.td}>
+                    <button onClick={() => supprimerCertificat(c._id)} style={styles.boutonSupprimer}>🗑</button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -65,4 +89,5 @@ const styles = {
   tableau: { width: "100%", borderCollapse: "collapse" },
   th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280" },
   td: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px" },
+  boutonSupprimer: { padding: "4px 10px", backgroundColor: "#fef2f2", color: "#dc2626", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
 };
