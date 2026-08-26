@@ -169,3 +169,4 @@ const styles = {
   badge: { backgroundColor: "#f3f4f6", color: "#374151", padding: "3px 10px", borderRadius: "12px", fontSize: "12px" },
   badgeAdmin: { backgroundColor: "#DCE6F1", color: "#1F3864", padding: "3px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: 600 },
 };
+
