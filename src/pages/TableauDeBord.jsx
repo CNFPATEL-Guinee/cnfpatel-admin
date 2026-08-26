@@ -28,7 +28,7 @@ export default function TableauDeBord() {
     <MiseEnPage>
       <h1 style={{ marginBottom: "8px" }}>Tableau de bord</h1>
       <p style={{ color: "#6b7280", marginBottom: "24px" }}>
-        Vue d'ensemble du LMS National.
+        Vue d'ensemble du CNFPATEL Guinée.
       </p>
 
       {erreur && <p style={{ color: "#b91c1c" }}>{erreur}</p>}
@@ -88,3 +88,4 @@ const styles = {
     margin: "2px 0 0",
   },
 };
+
