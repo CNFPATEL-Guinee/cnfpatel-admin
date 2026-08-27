@@ -4,6 +4,8 @@ import MiseEnPage from "../components/MiseEnPage";
 import { useIsMobile } from "../hooks/useIsMobile";
 import api from "../api/client";
 
+const rangs = ["Prefet", "Sous-prefet", "Secretaire-general", "Maire", "Chef-cabinet"];
+
 export default function Formations() {
   const estMobile = useIsMobile();
   const [formations, setFormations] = useState([]);
@@ -12,6 +14,7 @@ export default function Formations() {
 
   const [titre, setTitre] = useState("");
   const [description, setDescription] = useState("");
+  const [rangCible, setRangCible] = useState("");
   const [enregistrement, setEnregistrement] = useState(false);
 
   async function chargerFormations() {
@@ -35,9 +38,10 @@ export default function Formations() {
     e.preventDefault();
     setEnregistrement(true);
     try {
-      await api.post("/formations", { titre, description });
+      await api.post("/formations", { titre, description, rangCible: rangCible || undefined });
       setTitre("");
       setDescription("");
+      setRangCible("");
       await chargerFormations();
     } catch (e) {
       setErreur("Erreur lors de la création de la formation.");
@@ -67,6 +71,13 @@ export default function Formations() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
+            <label style={styles.label}>Rang cible (optionnel)</label>
+            <select style={styles.input} value={rangCible} onChange={(e) => setRangCible(e.target.value)}>
+              <option value="">— Accessible à tous les rangs —</option>
+              {rangs.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
             <button style={styles.bouton} disabled={enregistrement}>
               {enregistrement ? "Création..." : "Créer la formation"}
             </button>
@@ -88,7 +99,7 @@ export default function Formations() {
               {formations.map((f) => (
                 <Link key={f._id} to={`/formations/${f._id}`} style={styles.carteFormationMobile}>
                   <strong>{f.titre}</strong>
-                  <span style={styles.portee}>{f.regionId ? "Régionale" : "Nationale"}</span>
+                  <span style={styles.portee}>{f.rangCible || "Tous les rangs"}</span>
                 </Link>
               ))}
             </div>
@@ -97,7 +108,7 @@ export default function Formations() {
               <thead>
                 <tr>
                   <th style={styles.th}>Titre</th>
-                  <th style={styles.th}>Portée</th>
+                  <th style={styles.th}>Rang cible</th>
                 </tr>
               </thead>
               <tbody>
@@ -108,7 +119,7 @@ export default function Formations() {
                         {f.titre}
                       </Link>
                     </td>
-                    <td style={styles.td}>{f.regionId ? "Régionale" : "Nationale"}</td>
+                    <td style={styles.td}>{f.rangCible || "Tous les rangs"}</td>
                   </tr>
                 ))}
               </tbody>
