@@ -34,6 +34,11 @@ export default function Certificats() {
     }
   }
 
+  // Ouvre le PDF officiel du certificat dans un nouvel onglet.
+  function telechargerCertificat(id) {
+    window.open(`${api.defaults.baseURL}/certificats/${id}/pdf`, "_blank");
+  }
+
   const formatDate = (d) =>
     new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
@@ -60,6 +65,7 @@ export default function Certificats() {
                 <th style={styles.th}>Formation</th>
                 <th style={styles.th}>Date de délivrance</th>
                 <th style={styles.th}></th>
+                <th style={styles.th}></th>
               </tr>
             </thead>
             <tbody>
@@ -71,6 +77,9 @@ export default function Certificats() {
                   <td style={styles.td}>{c.utilisateurId?.telephone}</td>
                   <td style={styles.td}>{c.formationId?.titre}</td>
                   <td style={styles.td}>{formatDate(c.createdAt)}</td>
+                  <td style={styles.td}>
+                    <button onClick={() => telechargerCertificat(c._id)} style={styles.boutonVoir}>📄 PDF</button>
+                  </td>
                   <td style={styles.td}>
                     <button onClick={() => supprimerCertificat(c._id)} style={styles.boutonSupprimer}>🗑</button>
                   </td>
@@ -89,5 +98,6 @@ const styles = {
   tableau: { width: "100%", borderCollapse: "collapse" },
   th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280" },
   td: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px" },
+  boutonVoir: { padding: "4px 10px", backgroundColor: "#DCE6F1", color: "#1F3864", border: "none", borderRadius: "6px", fontSize: "12px", fontWeight: 600, cursor: "pointer" },
   boutonSupprimer: { padding: "4px 10px", backgroundColor: "#fef2f2", color: "#dc2626", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
 };
