@@ -9,6 +9,11 @@ const roles = [
   { valeur: "admin_national", label: "Admin national" },
 ];
 
+// Fonctions/rangs administratifs, utilises pour filtrer les formations
+// visibles par chaque apprenant (ex: un sous-prefet ne voit pas les
+// formations reservees aux prefets).
+const rangs = ["Prefet", "Sous-Prefet", "Secretaire-general", "Maire", "Chef-cabinet"];
+
 export default function Utilisateurs() {
   const [utilisateurs, setUtilisateurs] = useState([]);
   const [chargement, setChargement] = useState(true);
@@ -20,6 +25,7 @@ export default function Utilisateurs() {
   const [telephone, setTelephone] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
   const [role, setRole] = useState("apprenant");
+  const [rang, setRang] = useState("");
   const [enregistrement, setEnregistrement] = useState(false);
 
   async function chargerUtilisateurs() {
@@ -44,12 +50,16 @@ export default function Utilisateurs() {
     setEnregistrement(true);
     setSucces(null);
     try {
-      await api.post("/admin/utilisateurs", { nom, prenom, telephone, motDePasse, role });
+      await api.post("/admin/utilisateurs", {
+        nom, prenom, telephone, motDePasse, role,
+        rang: role === "apprenant" && rang ? rang : undefined,
+      });
       setNom("");
       setPrenom("");
       setTelephone("");
       setMotDePasse("");
       setRole("apprenant");
+      setRang("");
       setSucces("Utilisateur créé avec succès.");
       await chargerUtilisateurs();
     } catch (e) {
@@ -110,6 +120,18 @@ export default function Utilisateurs() {
               ))}
             </select>
 
+            {role === "apprenant" && (
+              <>
+                <label style={styles.label}>Rang / Fonction (optionnel)</label>
+                <select style={styles.input} value={rang} onChange={(e) => setRang(e.target.value)}>
+                  <option value="">— Non précisé —</option>
+                  {rangs.map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </>
+            )}
+
             <button style={styles.bouton} disabled={enregistrement}>
               {enregistrement ? "Création..." : "Créer l'utilisateur"}
             </button>
@@ -127,6 +149,7 @@ export default function Utilisateurs() {
                   <th style={styles.th}>Nom</th>
                   <th style={styles.th}>Téléphone</th>
                   <th style={styles.th}>Rôle</th>
+                  <th style={styles.th}>Rang</th>
                   <th style={styles.th}></th>
                 </tr>
               </thead>
@@ -140,6 +163,7 @@ export default function Utilisateurs() {
                         {libelleRole(u.role)}
                       </span>
                     </td>
+                    <td style={styles.td}>{u.rang || "—"}</td>
                     <td style={styles.td}>
                       <button onClick={() => supprimerUtilisateur(u._id)} style={styles.boutonSupprimer}>🗑</button>
                     </td>
@@ -160,11 +184,11 @@ const styles = {
   titreCarte: { fontSize: "16px", marginTop: 0, marginBottom: "16px" },
   label: { display: "block", marginBottom: "6px", fontSize: "13px", fontWeight: 600, color: "#374151" },
   input: { width: "100%", padding: "10px 12px", marginBottom: "16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", boxSizing: "border-box" },
-  bouton: { width: "100%", padding: "10px", backgroundColor: "#1F3864", color: "white", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" },
+  bouton: { width: "100%", padding: "10px", backgroundColor: "#1F3864", color:"white", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" },
   boutonSupprimer: { padding: "4px 10px", backgroundColor: "#fef2f2", color: "#dc2626", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
   succes: { backgroundColor: "#f0fdf4", color: "#15803d", padding: "10px", borderRadius: "8px", fontSize: "13px" },
   tableau: { width: "100%", borderCollapse: "collapse" },
-  th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280" },
+  th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb",fontSize: "13px", color: "#6b7280" },
   td: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px" },
   badge: { backgroundColor: "#f3f4f6", color: "#374151", padding: "3px 10px", borderRadius: "12px", fontSize: "12px" },
   badgeAdmin: { backgroundColor: "#DCE6F1", color: "#1F3864", padding: "3px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: 600 },
