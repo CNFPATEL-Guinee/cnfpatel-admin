@@ -10,9 +10,8 @@ const roles = [
 ];
 
 // Fonctions/rangs administratifs, utilises pour filtrer les formations
-// visibles par chaque apprenant (ex: un sous-prefet ne voit pas les
-// formations reservees aux prefets).
-const rangs = ["Prefet", "Sous-Prefet", "Secretaire-general", "Maire", "Chef-cabinet"];
+// visibles par chaque apprenant.
+const rangs = ["Prefet", "Sous-prefet", "Secretaire-general", "Maire", "Chef-cabinet"];
 
 export default function Utilisateurs() {
   const [utilisateurs, setUtilisateurs] = useState([]);
@@ -27,6 +26,9 @@ export default function Utilisateurs() {
   const [role, setRole] = useState("apprenant");
   const [rang, setRang] = useState("");
   const [enregistrement, setEnregistrement] = useState(false);
+
+  // Edition d un utilisateur existant.
+  const [utilisateurEnEdition, setUtilisateurEnEdition] = useState(null);
 
   async function chargerUtilisateurs() {
     setChargement(true);
@@ -45,28 +47,51 @@ export default function Utilisateurs() {
     chargerUtilisateurs();
   }, []);
 
-  async function creerUtilisateur(e) {
+  function reinitialiserForm() {
+    setNom("");
+    setPrenom("");
+    setTelephone("");
+    setMotDePasse("");
+    setRole("apprenant");
+    setRang("");
+    setUtilisateurEnEdition(null);
+  }
+
+  function commencerEdition(u) {
+    setUtilisateurEnEdition(u._id);
+    setNom(u.nom);
+    setPrenom(u.prenom);
+    setTelephone(u.telephone);
+    setMotDePasse(""); // vide = ne pas changer le mot de passe
+    setRole(u.role);
+    setRang(u.rang || "");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function soumettreUtilisateur(e) {
     e.preventDefault();
     setEnregistrement(true);
     setSucces(null);
     try {
-      await api.post("/admin/utilisateurs", {
-        nom, prenom, telephone, motDePasse, role,
-        rang: role === "apprenant" && rang ? rang : undefined,
-      });
-      setNom("");
-      setPrenom("");
-      setTelephone("");
-      setMotDePasse("");
-      setRole("apprenant");
-      setRang("");
-      setSucces("Utilisateur créé avec succès.");
+      if (utilisateurEnEdition) {
+        const donnees = { nom, prenom, telephone, role, rang: role === "apprenant" && rang ? rang : null };
+        if (motDePasse) donnees.motDePasse = motDePasse;
+        await api.patch(`/admin/utilisateurs/${utilisateurEnEdition}`, donnees);
+        setSucces("Utilisateur modifié avec succès.");
+      } else {
+        await api.post("/admin/utilisateurs", {
+          nom, prenom, telephone, motDePasse, role,
+          rang: role === "apprenant" && rang ? rang : undefined,
+        });
+        setSucces("Utilisateur créé avec succès.");
+      }
+      reinitialiserForm();
       await chargerUtilisateurs();
     } catch (e) {
       setErreur(
         e.response?.status === 409
           ? "Ce numéro de téléphone est déjà utilisé."
-          : "Erreur lors de la création de l'utilisateur."
+          : "Erreur lors de l'enregistrement de l'utilisateur."
       );
     } finally {
       setEnregistrement(false);
@@ -91,10 +116,17 @@ export default function Utilisateurs() {
 
       <div style={styles.grille}>
         <div style={styles.carte}>
-          <h2 style={styles.titreCarte}>Nouvel utilisateur</h2>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <h2 style={{ ...styles.titreCarte, marginBottom: 0 }}>
+              {utilisateurEnEdition ? "Modifier l'utilisateur" : "Nouvel utilisateur"}
+            </h2>
+            {utilisateurEnEdition && (
+              <button onClick={reinitialiserForm} style={styles.lienAnnuler}>Annuler</button>
+            )}
+          </div>
           {succes && <p style={styles.succes}>{succes}</p>}
           {erreur && <p style={{ color: "#b91c1c" }}>{erreur}</p>}
-          <form onSubmit={creerUtilisateur}>
+          <form onSubmit={soumettreUtilisateur}>
             <label style={styles.label}>Prénom</label>
             <input style={styles.input} value={prenom} onChange={(e) => setPrenom(e.target.value)} required />
 
@@ -104,13 +136,15 @@ export default function Utilisateurs() {
             <label style={styles.label}>Téléphone</label>
             <input style={styles.input} value={telephone} onChange={(e) => setTelephone(e.target.value)} required />
 
-            <label style={styles.label}>Mot de passe temporaire</label>
+            <label style={styles.label}>
+              Mot de passe {utilisateurEnEdition ? "(laisser vide pour ne pas changer)" : "temporaire"}
+            </label>
             <input
               style={styles.input}
               type="text"
               value={motDePasse}
               onChange={(e) => setMotDePasse(e.target.value)}
-              required
+              required={!utilisateurEnEdition}
             />
 
             <label style={styles.label}>Rôle</label>
@@ -133,7 +167,7 @@ export default function Utilisateurs() {
             )}
 
             <button style={styles.bouton} disabled={enregistrement}>
-              {enregistrement ? "Création..." : "Créer l'utilisateur"}
+              {enregistrement ? "Enregistrement..." : utilisateurEnEdition ? "Enregistrer les modifications" : "Créer l'utilisateur"}
             </button>
           </form>
         </div>
@@ -151,6 +185,7 @@ export default function Utilisateurs() {
                   <th style={styles.th}>Rôle</th>
                   <th style={styles.th}>Rang</th>
                   <th style={styles.th}></th>
+                  <th style={styles.th}></th>
                 </tr>
               </thead>
               <tbody>
@@ -164,6 +199,9 @@ export default function Utilisateurs() {
                       </span>
                     </td>
                     <td style={styles.td}>{u.rang || "—"}</td>
+                    <td style={styles.td}>
+                      <button onClick={() => commencerEdition(u)} style={styles.boutonModifier}>✏️</button>
+                    </td>
                     <td style={styles.td}>
                       <button onClick={() => supprimerUtilisateur(u._id)} style={styles.boutonSupprimer}>🗑</button>
                     </td>
@@ -185,7 +223,9 @@ const styles = {
   label: { display: "block", marginBottom: "6px", fontSize: "13px", fontWeight: 600, color: "#374151" },
   input: { width: "100%", padding: "10px 12px", marginBottom: "16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", boxSizing: "border-box" },
   bouton: { width: "100%", padding: "10px", backgroundColor: "#1F3864", color:"white", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" },
+  boutonModifier: { padding: "4px 10px", backgroundColor: "#fef9c3", color: "#854d0e", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
   boutonSupprimer: { padding: "4px 10px", backgroundColor: "#fef2f2", color: "#dc2626", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
+  lienAnnuler: { background: "none", border: "none", color: "#6b7280", fontSize: "12px", cursor: "pointer", textDecoration: "underline" },
   succes: { backgroundColor: "#f0fdf4", color: "#15803d", padding: "10px", borderRadius: "8px", fontSize: "13px" },
   tableau: { width: "100%", borderCollapse: "collapse" },
   th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb",fontSize: "13px", color: "#6b7280" },
@@ -193,4 +233,3 @@ const styles = {
   badge: { backgroundColor: "#f3f4f6", color: "#374151", padding: "3px 10px", borderRadius: "12px", fontSize: "12px" },
   badgeAdmin: { backgroundColor: "#DCE6F1", color: "#1F3864", padding: "3px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: 600 },
 };
-
