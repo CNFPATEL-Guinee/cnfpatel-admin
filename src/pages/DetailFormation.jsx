@@ -282,7 +282,7 @@ export default function DetailFormation() {
           <div style={styles.carte}>
             {classes.length === 0 ? <p style={styles.gris}>Aucune classe programmée.</p> : (
               <table style={styles.tableau}>
-                <thead><tr><th style={styles.th}>Titre</th><th style={styles.th}>Date</th><th style={styles.th}>Formateur</th><th style={styles.th}></th><th style={styles.th}></th><th style={styles.th}></th><th style={styles.th}></th></tr></thead>
+                <thead><tr><th style={styles.thTitre}>Titre</th><th style={styles.thEtroit}>Date</th><th style={styles.thEtroit}>Formateur</th><th style={styles.thAction}></th><th style={styles.thAction}></th><th style={styles.thAction}></th><th style={styles.thAction}></th></tr></thead>
                 <tbody>
                   {classes.map((c) => (
                     <tr key={c._id}>
@@ -376,7 +376,10 @@ const styles = {
   section: { marginTop: "28px" },
   titreSection: { fontSize: "18px", marginBottom: "12px", color: "#1F3864" },
   grille: { display: "grid", gridTemplateColumns: "340px 1fr", gap: "24px", alignItems: "start" },
-  carte: { backgroundColor: "white", borderRadius: "12px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" },
+  carte: { backgroundColor: "white", borderRadius: "12px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", overflowX: "auto" },
+  thTitre: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "160px" },
+  thEtroit: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "100px" },
+  thAction: { padding: "10px", borderBottom: "2px solid #e5e7eb", width: "40px" },
   label: { display: "block", marginBottom: "6px", fontSize: "13px", fontWeight: 600, color: "#374151" },
   input: { width: "100%", padding: "10px 12px", marginBottom: "16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", boxSizing: "border-box" },
   astuce: { fontSize: "11px", color: "#9ca3af", marginTop: "-10px", marginBottom: "16px" },
@@ -393,7 +396,8 @@ const styles = {
   listeCours: { marginTop: "10px", marginBottom: 0, paddingLeft: "0", listStyle: "none", fontSize: "13px", color: "#4b5563" },
   ligneCours: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" },
   pasDeCours: { marginTop: "8px", marginBottom: 0, fontSize: "13px", color: "#9ca3af" },
-  tableau: { width: "100%", borderCollapse: "collapse" },
+  tableau: { width: "100%", borderCollapse: "collapse", tableLayout: "fixed" },
   th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280" },
   td: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px" },
 };
+
