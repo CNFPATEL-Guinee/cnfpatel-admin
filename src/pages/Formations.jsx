@@ -17,6 +17,9 @@ export default function Formations() {
   const [rangCible, setRangCible] = useState("");
   const [enregistrement, setEnregistrement] = useState(false);
 
+  // Edition d une formation existante.
+  const [formationEnEdition, setFormationEnEdition] = useState(null);
+
   async function chargerFormations() {
     setChargement(true);
     try {
@@ -34,17 +37,39 @@ export default function Formations() {
     chargerFormations();
   }, []);
 
-  async function creerFormation(e) {
+  function reinitialiserForm() {
+    setTitre("");
+    setDescription("");
+    setRangCible("");
+    setFormationEnEdition(null);
+  }
+
+  function commencerEdition(f) {
+    setFormationEnEdition(f._id);
+    setTitre(f.titre);
+    setDescription(f.description || "");
+    setRangCible(f.rangCible || "");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function soumettreFormation(e) {
     e.preventDefault();
     setEnregistrement(true);
     try {
-      await api.post("/formations", { titre, description, rangCible: rangCible || undefined });
-      setTitre("");
-      setDescription("");
-      setRangCible("");
+      const donnees = { titre, description, rangCible: rangCible || null };
+      if (formationEnEdition) {
+        await api.patch(`/formations/${formationEnEdition}`, donnees);
+      } else {
+        await api.post("/formations", donnees);
+      }
+      reinitialiserForm();
       await chargerFormations();
     } catch (e) {
-      setErreur("Erreur lors de la création de la formation.");
+      setErreur(
+        formationEnEdition
+          ? "Erreur lors de la modification de la formation."
+          : "Erreur lors de la création de la formation."
+      );
     } finally {
       setEnregistrement(false);
     }
@@ -56,8 +81,15 @@ export default function Formations() {
 
       <div style={styles.grille(estMobile)}>
         <div style={styles.carte}>
-          <h2 style={styles.titreCarte}>Nouvelle formation</h2>
-          <form onSubmit={creerFormation}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <h2 style={{ ...styles.titreCarte, marginBottom: 0 }}>
+              {formationEnEdition ? "Modifier la formation" : "Nouvelle formation"}
+            </h2>
+            {formationEnEdition && (
+              <button onClick={reinitialiserForm} style={styles.lienAnnuler}>Annuler</button>
+            )}
+          </div>
+          <form onSubmit={soumettreFormation}>
             <label style={styles.label}>Titre</label>
             <input
               style={styles.input}
@@ -79,7 +111,7 @@ export default function Formations() {
               ))}
             </select>
             <button style={styles.bouton} disabled={enregistrement}>
-              {enregistrement ? "Création..." : "Créer la formation"}
+              {enregistrement ? "Enregistrement..." : formationEnEdition ? "Enregistrer les modifications" : "Créer la formation"}
             </button>
           </form>
         </div>
@@ -87,7 +119,7 @@ export default function Formations() {
         <div style={styles.carte}>
           <h2 style={styles.titreCarte}>Formations existantes</h2>
           <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "-8px" }}>
-            Cliquez sur une formation pour gérer ses modules et cours.
+            Cliquez sur le titre pour gérer ses modules et cours.
           </p>
           {erreur && <p style={{ color: "#b91c1c" }}>{erreur}</p>}
           {chargement ? (
@@ -97,10 +129,13 @@ export default function Formations() {
           ) : estMobile ? (
             <div>
               {formations.map((f) => (
-                <Link key={f._id} to={`/formations/${f._id}`} style={styles.carteFormationMobile}>
-                  <strong>{f.titre}</strong>
+                <div key={f._id} style={styles.carteFormationMobile}>
+                  <Link to={`/formations/${f._id}`} style={{ textDecoration: "none", color: "#1F3864" }}>
+                    <strong>{f.titre}</strong>
+                  </Link>
                   <span style={styles.portee}>{f.rangCible || "Tous les rangs"}</span>
-                </Link>
+                  <button onClick={() => commencerEdition(f)} style={styles.boutonModifier}>✏️ Modifier</button>
+                </div>
               ))}
             </div>
           ) : (
@@ -109,6 +144,7 @@ export default function Formations() {
                 <tr>
                   <th style={styles.th}>Titre</th>
                   <th style={styles.th}>Rang cible</th>
+                  <th style={styles.th}></th>
                 </tr>
               </thead>
               <tbody>
@@ -120,6 +156,9 @@ export default function Formations() {
                       </Link>
                     </td>
                     <td style={styles.td}>{f.rangCible || "Tous les rangs"}</td>
+                    <td style={styles.td}>
+                      <button onClick={() => commencerEdition(f)} style={styles.boutonModifier}>✏️</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -177,6 +216,16 @@ const styles = {
     fontWeight: 600,
     cursor: "pointer",
   },
+  boutonModifier: {
+    padding: "4px 10px",
+    backgroundColor: "#fef9c3",
+    color: "#854d0e",
+    border: "none",
+    borderRadius: "6px",
+    fontSize: "12px",
+    cursor: "pointer",
+  },
+  lienAnnuler: { background: "none", border: "none", color: "#6b7280", fontSize: "12px", cursor: "pointer", textDecoration: "underline" },
   tableau: {
     width: "100%",
     borderCollapse: "collapse",
@@ -201,13 +250,11 @@ const styles = {
   carteFormationMobile: {
     display: "flex",
     flexDirection: "column",
-    gap: "4px",
+    gap: "6px",
     padding: "14px",
     borderRadius: "10px",
     border: "1px solid #e5e7eb",
     marginBottom: "10px",
-    textDecoration: "none",
-    color: "#1F3864",
   },
   portee: {
     fontSize: "12px",
