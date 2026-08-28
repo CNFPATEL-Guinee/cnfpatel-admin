@@ -17,7 +17,6 @@ export default function Formations() {
   const [rangCible, setRangCible] = useState("");
   const [enregistrement, setEnregistrement] = useState(false);
 
-  // Edition d une formation existante.
   const [formationEnEdition, setFormationEnEdition] = useState(null);
 
   async function chargerFormations() {
@@ -72,6 +71,16 @@ export default function Formations() {
       );
     } finally {
       setEnregistrement(false);
+    }
+  }
+
+  async function supprimerFormation(id) {
+    if (!window.confirm("Supprimer cette formation et tout son contenu (modules, cours, quiz) ? Cette action est irréversible.")) return;
+    try {
+      await api.delete(`/formations/${id}`);
+      await chargerFormations();
+    } catch (e) {
+      setErreur("Erreur lors de la suppression de la formation.");
     }
   }
 
@@ -134,7 +143,10 @@ export default function Formations() {
                     <strong>{f.titre}</strong>
                   </Link>
                   <span style={styles.portee}>{f.rangCible || "Tous les rangs"}</span>
-                  <button onClick={() => commencerEdition(f)} style={styles.boutonModifier}>✏️ Modifier</button>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button onClick={() => commencerEdition(f)} style={styles.boutonModifier}>✏️ Modifier</button>
+                    <button onClick={() => supprimerFormation(f._id)} style={styles.boutonSupprimer}>🗑 Supprimer</button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -144,6 +156,7 @@ export default function Formations() {
                 <tr>
                   <th style={styles.th}>Titre</th>
                   <th style={styles.th}>Rang cible</th>
+                  <th style={styles.th}></th>
                   <th style={styles.th}></th>
                 </tr>
               </thead>
@@ -158,6 +171,9 @@ export default function Formations() {
                     <td style={styles.td}>{f.rangCible || "Tous les rangs"}</td>
                     <td style={styles.td}>
                       <button onClick={() => commencerEdition(f)} style={styles.boutonModifier}>✏️</button>
+                    </td>
+                    <td style={styles.td}>
+                      <button onClick={() => supprimerFormation(f._id)} style={styles.boutonSupprimer}>🗑</button>
                     </td>
                   </tr>
                 ))}
@@ -220,6 +236,15 @@ const styles = {
     padding: "4px 10px",
     backgroundColor: "#fef9c3",
     color: "#854d0e",
+    border: "none",
+    borderRadius: "6px",
+    fontSize: "12px",
+    cursor: "pointer",
+  },
+  boutonSupprimer: {
+    padding: "4px 10px",
+    backgroundColor: "#fef2f2",
+    color: "#dc2626",
     border: "none",
     borderRadius: "6px",
     fontSize: "12px",
