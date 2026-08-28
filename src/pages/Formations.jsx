@@ -154,7 +154,7 @@ export default function Formations() {
             <table style={styles.tableau}>
               <thead>
                 <tr>
-                  <th style={styles.th}>Titre</th>
+                  <th style={styles.thTitre}>Titre</th>
                   <th style={styles.thEtroit}>Rang cible</th>
                   <th style={styles.thAction}></th>
                   <th style={styles.thAction}></th>
@@ -263,6 +263,14 @@ const styles = {
     fontSize: "13px",
     color: "#6b7280",
   },
+  thTitre: {
+    textAlign: "left",
+    padding: "10px",
+    borderBottom: "2px solid #e5e7eb",
+    fontSize: "13px",
+    color: "#6b7280",
+    width: "200px",
+  },
   thEtroit: {
     textAlign: "left",
     padding: "10px",
@@ -315,3 +323,4 @@ const styles = {
     color: "#6b7280",
   },
 };
+
