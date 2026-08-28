@@ -125,7 +125,7 @@ export default function Formations() {
           </form>
         </div>
 
-        <div style={styles.carte}>
+        <div style={{ ...styles.carte, overflowX: "auto" }}>
           <h2 style={styles.titreCarte}>Formations existantes</h2>
           <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "-8px" }}>
             Cliquez sur le titre pour gérer ses modules et cours.
@@ -155,9 +155,9 @@ export default function Formations() {
               <thead>
                 <tr>
                   <th style={styles.th}>Titre</th>
-                  <th style={styles.th}>Rang cible</th>
-                  <th style={styles.th}></th>
-                  <th style={styles.th}></th>
+                  <th style={styles.thEtroit}>Rang cible</th>
+                  <th style={styles.thAction}></th>
+                  <th style={styles.thAction}></th>
                 </tr>
               </thead>
               <tbody>
@@ -168,11 +168,11 @@ export default function Formations() {
                         {f.titre}
                       </Link>
                     </td>
-                    <td style={styles.td}>{f.rangCible || "Tous les rangs"}</td>
-                    <td style={styles.td}>
+                    <td style={styles.tdEtroit}>{f.rangCible || "Tous les rangs"}</td>
+                    <td style={styles.tdAction}>
                       <button onClick={() => commencerEdition(f)} style={styles.boutonModifier}>✏️</button>
                     </td>
-                    <td style={styles.td}>
+                    <td style={styles.tdAction}>
                       <button onClick={() => supprimerFormation(f._id)} style={styles.boutonSupprimer}>🗑</button>
                     </td>
                   </tr>
@@ -233,7 +233,7 @@ const styles = {
     cursor: "pointer",
   },
   boutonModifier: {
-    padding: "4px 10px",
+    padding: "4px 8px",
     backgroundColor: "#fef9c3",
     color: "#854d0e",
     border: "none",
@@ -242,7 +242,7 @@ const styles = {
     cursor: "pointer",
   },
   boutonSupprimer: {
-    padding: "4px 10px",
+    padding: "4px 8px",
     backgroundColor: "#fef2f2",
     color: "#dc2626",
     border: "none",
@@ -254,6 +254,7 @@ const styles = {
   tableau: {
     width: "100%",
     borderCollapse: "collapse",
+    tableLayout: "fixed",
   },
   th: {
     textAlign: "left",
@@ -262,10 +263,38 @@ const styles = {
     fontSize: "13px",
     color: "#6b7280",
   },
+  thEtroit: {
+    textAlign: "left",
+    padding: "10px",
+    borderBottom: "2px solid #e5e7eb",
+    fontSize: "13px",
+    color: "#6b7280",
+    width: "140px",
+  },
+  thAction: {
+    padding: "10px",
+    borderBottom: "2px solid #e5e7eb",
+    width: "40px",
+  },
   td: {
     padding: "10px",
     borderBottom: "1px solid #f3f4f6",
     fontSize: "14px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+  tdEtroit: {
+    padding: "10px",
+    borderBottom: "1px solid #f3f4f6",
+    fontSize: "14px",
+    width: "140px",
+  },
+  tdAction: {
+    padding: "10px",
+    borderBottom: "1px solid #f3f4f6",
+    width: "40px",
+    textAlign: "center",
   },
   lienLigne: {
     color: "#1F3864",
