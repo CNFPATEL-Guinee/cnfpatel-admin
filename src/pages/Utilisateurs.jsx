@@ -177,7 +177,7 @@ export default function Utilisateurs() {
             <table style={styles.tableau}>
               <thead>
                 <tr>
-                  <th style={styles.th}>Nom</th>
+                  <th style={styles.thNom}>Nom</th>
                   <th style={styles.thEtroit}>Téléphone</th>
                   <th style={styles.thEtroit}>Rôle</th>
                   <th style={styles.thEtroit}>Rang</th>
@@ -226,11 +226,13 @@ const styles = {
   succes: { backgroundColor: "#f0fdf4", color: "#15803d", padding: "10px", borderRadius: "8px", fontSize: "13px" },
   tableau: { width: "100%", borderCollapse: "collapse", tableLayout: "fixed" },
   th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280" },
-  thEtroit: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "110px" },
+  thNom: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "180px" },
+  thEtroit: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "100px" },
   thAction: { padding: "10px", borderBottom: "2px solid #e5e7eb", width: "40px" },
   td: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
-  tdEtroit: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px", width: "110px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+  tdEtroit: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px", width: "100px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
   tdAction: { padding: "10px", borderBottom: "1px solid #f3f4f6", width: "40px", textAlign: "center" },
   badge: { backgroundColor: "#f3f4f6", color: "#374151", padding: "3px 10px", borderRadius: "12px", fontSize: "12px" },
   badgeAdmin: { backgroundColor: "#DCE6F1", color: "#1F3864", padding: "3px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: 600 },
 };
+
