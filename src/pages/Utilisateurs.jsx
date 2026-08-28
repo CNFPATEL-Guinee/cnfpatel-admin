@@ -9,8 +9,6 @@ const roles = [
   { valeur: "admin_national", label: "Admin national" },
 ];
 
-// Fonctions/rangs administratifs, utilises pour filtrer les formations
-// visibles par chaque apprenant.
 const rangs = ["Prefet", "Sous-prefet", "Secretaire-general", "Maire", "Chef-cabinet"];
 
 export default function Utilisateurs() {
@@ -27,7 +25,6 @@ export default function Utilisateurs() {
   const [rang, setRang] = useState("");
   const [enregistrement, setEnregistrement] = useState(false);
 
-  // Edition d un utilisateur existant.
   const [utilisateurEnEdition, setUtilisateurEnEdition] = useState(null);
 
   async function chargerUtilisateurs() {
@@ -62,7 +59,7 @@ export default function Utilisateurs() {
     setNom(u.nom);
     setPrenom(u.prenom);
     setTelephone(u.telephone);
-    setMotDePasse(""); // vide = ne pas changer le mot de passe
+    setMotDePasse("");
     setRole(u.role);
     setRang(u.rang || "");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -172,7 +169,7 @@ export default function Utilisateurs() {
           </form>
         </div>
 
-        <div style={styles.carte}>
+        <div style={{ ...styles.carte, overflowX: "auto" }}>
           <h2 style={styles.titreCarte}>Utilisateurs existants ({utilisateurs.length})</h2>
           {chargement ? (
             <p style={{ color: "#6b7280" }}>Chargement...</p>
@@ -181,28 +178,28 @@ export default function Utilisateurs() {
               <thead>
                 <tr>
                   <th style={styles.th}>Nom</th>
-                  <th style={styles.th}>Téléphone</th>
-                  <th style={styles.th}>Rôle</th>
-                  <th style={styles.th}>Rang</th>
-                  <th style={styles.th}></th>
-                  <th style={styles.th}></th>
+                  <th style={styles.thEtroit}>Téléphone</th>
+                  <th style={styles.thEtroit}>Rôle</th>
+                  <th style={styles.thEtroit}>Rang</th>
+                  <th style={styles.thAction}></th>
+                  <th style={styles.thAction}></th>
                 </tr>
               </thead>
               <tbody>
                 {utilisateurs.map((u) => (
                   <tr key={u._id}>
                     <td style={styles.td}>{u.prenom} {u.nom}</td>
-                    <td style={styles.td}>{u.telephone}</td>
-                    <td style={styles.td}>
+                    <td style={styles.tdEtroit}>{u.telephone}</td>
+                    <td style={styles.tdEtroit}>
                       <span style={u.role.includes("admin") ? styles.badgeAdmin : styles.badge}>
                         {libelleRole(u.role)}
                       </span>
                     </td>
-                    <td style={styles.td}>{u.rang || "—"}</td>
-                    <td style={styles.td}>
+                    <td style={styles.tdEtroit}>{u.rang || "—"}</td>
+                    <td style={styles.tdAction}>
                       <button onClick={() => commencerEdition(u)} style={styles.boutonModifier}>✏️</button>
                     </td>
-                    <td style={styles.td}>
+                    <td style={styles.tdAction}>
                       <button onClick={() => supprimerUtilisateur(u._id)} style={styles.boutonSupprimer}>🗑</button>
                     </td>
                   </tr>
@@ -223,13 +220,17 @@ const styles = {
   label: { display: "block", marginBottom: "6px", fontSize: "13px", fontWeight: 600, color: "#374151" },
   input: { width: "100%", padding: "10px 12px", marginBottom: "16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", boxSizing: "border-box" },
   bouton: { width: "100%", padding: "10px", backgroundColor: "#1F3864", color:"white", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" },
-  boutonModifier: { padding: "4px 10px", backgroundColor: "#fef9c3", color: "#854d0e", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
-  boutonSupprimer: { padding: "4px 10px", backgroundColor: "#fef2f2", color: "#dc2626", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
+  boutonModifier: { padding: "4px 8px", backgroundColor: "#fef9c3", color: "#854d0e", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
+  boutonSupprimer: { padding: "4px 8px", backgroundColor: "#fef2f2", color: "#dc2626", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
   lienAnnuler: { background: "none", border: "none", color: "#6b7280", fontSize: "12px", cursor: "pointer", textDecoration: "underline" },
   succes: { backgroundColor: "#f0fdf4", color: "#15803d", padding: "10px", borderRadius: "8px", fontSize: "13px" },
-  tableau: { width: "100%", borderCollapse: "collapse" },
-  th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb",fontSize: "13px", color: "#6b7280" },
-  td: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px" },
+  tableau: { width: "100%", borderCollapse: "collapse", tableLayout: "fixed" },
+  th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280" },
+  thEtroit: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "110px" },
+  thAction: { padding: "10px", borderBottom: "2px solid #e5e7eb", width: "40px" },
+  td: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+  tdEtroit: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px", width: "110px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+  tdAction: { padding: "10px", borderBottom: "1px solid #f3f4f6", width: "40px", textAlign: "center" },
   badge: { backgroundColor: "#f3f4f6", color: "#374151", padding: "3px 10px", borderRadius: "12px", fontSize: "12px" },
   badgeAdmin: { backgroundColor: "#DCE6F1", color: "#1F3864", padding: "3px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: 600 },
 };
