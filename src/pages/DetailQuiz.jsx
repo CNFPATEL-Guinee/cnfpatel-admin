@@ -234,6 +234,7 @@ export default function DetailQuiz() {
 
             <div style={styles.carte}>
               <h2 style={styles.titreCarte}>{questions.length} question(s)</h2>
+              <div style={styles.zoneDefilementQuestions}>
               {questions.length === 0 ? (
                 <p style={{ color: "#6b7280" }}>Aucune question pour le moment.</p>
               ) : (
@@ -254,8 +255,8 @@ export default function DetailQuiz() {
                       ))}
                     </ul>
                   </div>
-                ))
-              )}
+                )) )}
+              </div>
             </div>
           </div>
         </>
@@ -283,4 +284,6 @@ const styles = {
   blocQuestion: { padding: "14px", border: "1px solid #e5e7eb", borderRadius: "10px", marginBottom: "12px" },
   listeChoix: { marginTop: "8px", marginBottom: 0, fontSize: "13px", color: "#4b5563" },
   choixCorrect: { color: "#15803d", fontWeight: 600 },
+  zoneDefilementQuestions: { maxHeight: "520px", overflowY: "auto", paddingRight: "6px" },
 };
+
