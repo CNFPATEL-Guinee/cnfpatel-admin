@@ -83,35 +83,37 @@ export default function Notifications() {
           </form>
         </div>
 
-        <div style={styles.carte}>
+        <div style={{ ...styles.carte, overflowX: "auto" }}>
           <h2 style={{ marginTop: 0, fontSize: "16px" }}>Historique des annonces</h2>
           {chargement ? (
             <p style={{ color: "#6b7280" }}>Chargement...</p>
           ) : historique.length === 0 ? (
             <p style={{ color: "#6b7280" }}>Aucune annonce envoyée pour le moment.</p>
           ) : (
-            <table style={styles.tableau}>
-              <thead>
-                <tr>
-                  <th style={styles.th}>Message</th>
-                  <th style={styles.th}>Destinataires</th>
-                  <th style={styles.th}>Date</th>
-                  <th style={styles.th}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {historique.map((h) => (
-                  <tr key={h._id}>
-                    <td style={styles.td}>{h.contenu}</td>
-                    <td style={styles.td}>{h.nbDestinataires}</td>
-                    <td style={styles.td}>{formatDate(h.createdAt)}</td>
-                    <td style={styles.td}>
-                      <button onClick={() => supprimerDiffusion(h._id)} style={styles.boutonSupprimer}>🗑</button>
-                    </td>
+            <div style={styles.zoneDefilementVertical}>
+              <table style={styles.tableau}>
+                <thead>
+                  <tr>
+                    <th style={styles.thMessage}>Message</th>
+                    <th style={styles.thEtroit}>Destinataires</th>
+                    <th style={styles.thEtroit}>Date</th>
+                    <th style={styles.thAction}></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {historique.map((h) => (
+                    <tr key={h._id}>
+                      <td style={styles.tdMessage}>{h.contenu}</td>
+                      <td style={styles.tdEtroit}>{h.nbDestinataires}</td>
+                      <td style={styles.tdEtroit}>{formatDate(h.createdAt)}</td>
+                      <td style={styles.tdAction}>
+                        <button onClick={() => supprimerDiffusion(h._id)} style={styles.boutonSupprimer}>🗑</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
@@ -124,10 +126,15 @@ const styles = {
   carte: { backgroundColor: "white", borderRadius: "12px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" },
   label: { display: "block", marginBottom: "6px", fontSize: "13px", fontWeight: 600, color: "#374151" },
   input: { width: "100%", padding: "10px 12px", marginBottom: "16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", boxSizing: "border-box", fontFamily: "inherit" },
-  bouton: { width: "100%", padding: "10px", backgroundColor: "#1F3864", color: "white", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" },
+  bouton: { width: "100%", padding: "10px", backgroundColor: "#1F3864", color:"white", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: "pointer" },
   succes: { backgroundColor: "#f0fdf4", color: "#15803d", padding: "10px", borderRadius: "8px", fontSize: "13px" },
-  tableau: { width: "100%", borderCollapse: "collapse" },
-  th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280" },
-  td: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px" },
+  zoneDefilementVertical: { maxHeight: "480px", overflowY: "auto" },
+  tableau: { width: "100%", borderCollapse: "collapse", tableLayout: "fixed" },
+  thMessage: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "260px" },
+  thEtroit: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "110px" },
+  thAction: { padding: "10px", borderBottom: "2px solid #e5e7eb", width: "40px" },
+  tdMessage: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis" },
+  tdEtroit: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px" },
+  tdAction: { padding: "10px", borderBottom: "1px solid #f3f4f6", width: "40px", textAlign: "center" },
   boutonSupprimer: { padding: "4px 10px", backgroundColor: "#fef2f2", color: "#dc2626", border: "none", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
 };
