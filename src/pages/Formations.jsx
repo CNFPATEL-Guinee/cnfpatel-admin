@@ -9,12 +9,14 @@ const rangs = ["Prefet", "Sous-prefet", "Secretaire-general", "Maire", "Chef-cab
 export default function Formations() {
   const estMobile = useIsMobile();
   const [formations, setFormations] = useState([]);
+  const [formateurs, setFormateurs] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState(null);
 
   const [titre, setTitre] = useState("");
   const [description, setDescription] = useState("");
   const [rangCible, setRangCible] = useState("");
+  const [formateurId, setFormateurId] = useState("");
   const [enregistrement, setEnregistrement] = useState(false);
 
   const [formationEnEdition, setFormationEnEdition] = useState(null);
@@ -22,8 +24,12 @@ export default function Formations() {
   async function chargerFormations() {
     setChargement(true);
     try {
-      const reponse = await api.get("/formations");
-      setFormations(reponse.data);
+      const [repFormations, repUtilisateurs] = await Promise.all([
+        api.get("/formations"),
+        api.get("/admin/utilisateurs"),
+      ]);
+      setFormations(repFormations.data);
+      setFormateurs(repUtilisateurs.data.filter((u) => u.role === "formateur"));
       setErreur(null);
     } catch (e) {
       setErreur("Impossible de charger les formations. Vérifiez votre connexion.");
@@ -40,6 +46,7 @@ export default function Formations() {
     setTitre("");
     setDescription("");
     setRangCible("");
+    setFormateurId("");
     setFormationEnEdition(null);
   }
 
@@ -48,6 +55,7 @@ export default function Formations() {
     setTitre(f.titre);
     setDescription(f.description || "");
     setRangCible(f.rangCible || "");
+    setFormateurId(f.formateurId || "");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -55,7 +63,11 @@ export default function Formations() {
     e.preventDefault();
     setEnregistrement(true);
     try {
-      const donnees = { titre, description, rangCible: rangCible || null };
+      const donnees = {
+        titre, description,
+        rangCible: rangCible || null,
+        formateurId: formateurId || null,
+      };
       if (formationEnEdition) {
         await api.patch(`/formations/${formationEnEdition}`, donnees);
       } else {
@@ -83,6 +95,11 @@ export default function Formations() {
       setErreur("Erreur lors de la suppression de la formation.");
     }
   }
+
+  const nomFormateur = (fId) => {
+    const f = formateurs.find((x) => x._id === fId);
+    return f ? `${f.prenom} ${f.nom}` : "— Non assigné —";
+  };
 
   return (
     <MiseEnPage>
@@ -119,6 +136,16 @@ export default function Formations() {
                 <option key={r} value={r}>{r}</option>
               ))}
             </select>
+            <label style={styles.label}>Formateur assigné (optionnel)</label>
+            <select style={styles.input} value={formateurId} onChange={(e) => setFormateurId(e.target.value)}>
+              <option value="">— Non assigné —</option>
+              {formateurs.map((f) => (
+                <option key={f._id} value={f._id}>{f.prenom} {f.nom}</option>
+              ))}
+            </select>
+            <p style={{ fontSize: "11px", color: "#9ca3af", marginTop: "-10px", marginBottom: "16px" }}>
+              Seul ce formateur pourra répondre aux questions posées sur cette formation.
+            </p>
             <button style={styles.bouton} disabled={enregistrement}>
               {enregistrement ? "Enregistrement..." : formationEnEdition ? "Enregistrer les modifications" : "Créer la formation"}
             </button>
@@ -142,7 +169,7 @@ export default function Formations() {
                   <Link to={`/formations/${f._id}`} style={{ textDecoration: "none", color: "#1F3864" }}>
                     <strong>{f.titre}</strong>
                   </Link>
-                  <span style={styles.portee}>{f.rangCible || "Tous les rangs"}</span>
+                  <span style={styles.portee}>{f.rangCible || "Tous les rangs"} — {nomFormateur(f.formateurId)}</span>
                   <div style={{ display: "flex", gap: "8px" }}>
                     <button onClick={() => commencerEdition(f)} style={styles.boutonModifier}>✏️ Modifier</button>
                     <button onClick={() => supprimerFormation(f._id)} style={styles.boutonSupprimer}>🗑 Supprimer</button>
@@ -156,6 +183,7 @@ export default function Formations() {
                 <tr>
                   <th style={styles.thTitre}>Titre</th>
                   <th style={styles.thEtroit}>Rang cible</th>
+                  <th style={styles.thEtroit}>Formateur</th>
                   <th style={styles.thAction}></th>
                   <th style={styles.thAction}></th>
                 </tr>
@@ -168,11 +196,12 @@ export default function Formations() {
                         {f.titre}
                       </Link>
                     </td>
-                    <td style={styles.tdEtroit}>{f.rangCible || "Tous les rangs"}</td>
-                    <td style={styles.tdAction}>
+                    <td style={styles.td}>{f.rangCible || "Tous les rangs"}</td>
+                    <td style={styles.td}>{nomFormateur(f.formateurId)}</td>
+                    <td style={styles.td}>
                       <button onClick={() => commencerEdition(f)} style={styles.boutonModifier}>✏️</button>
                     </td>
-                    <td style={styles.tdAction}>
+                    <td style={styles.td}>
                       <button onClick={() => supprimerFormation(f._id)} style={styles.boutonSupprimer}>🗑</button>
                     </td>
                   </tr>
@@ -256,34 +285,9 @@ const styles = {
     borderCollapse: "collapse",
     tableLayout: "fixed",
   },
-  th: {
-    textAlign: "left",
-    padding: "10px",
-    borderBottom: "2px solid #e5e7eb",
-    fontSize: "13px",
-    color: "#6b7280",
-  },
-  thTitre: {
-    textAlign: "left",
-    padding: "10px",
-    borderBottom: "2px solid #e5e7eb",
-    fontSize: "13px",
-    color: "#6b7280",
-    width: "200px",
-  },
-  thEtroit: {
-    textAlign: "left",
-    padding: "10px",
-    borderBottom: "2px solid #e5e7eb",
-    fontSize: "13px",
-    color: "#6b7280",
-    width: "140px",
-  },
-  thAction: {
-    padding: "10px",
-    borderBottom: "2px solid #e5e7eb",
-    width: "40px",
-  },
+  thTitre: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "180px" },
+  thEtroit: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "120px" },
+  thAction: { padding: "10px", borderBottom: "2px solid #e5e7eb", width: "40px" },
   td: {
     padding: "10px",
     borderBottom: "1px solid #f3f4f6",
@@ -291,18 +295,6 @@ const styles = {
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
-  },
-  tdEtroit: {
-    padding: "10px",
-    borderBottom: "1px solid #f3f4f6",
-    fontSize: "14px",
-    width: "140px",
-  },
-  tdAction: {
-    padding: "10px",
-    borderBottom: "1px solid #f3f4f6",
-    width: "40px",
-    textAlign: "center",
   },
   lienLigne: {
     color: "#1F3864",
@@ -323,4 +315,3 @@ const styles = {
     color: "#6b7280",
   },
 };
-
