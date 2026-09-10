@@ -14,6 +14,7 @@ import Notifications from "./pages/Notifications";
 import EspaceFormateur from "./pages/EspaceFormateur";
 import FormationsFormateur from "./pages/FormationsFormateur";
 import DetailFormationFormateur from "./pages/DetailFormationFormateur";
+import QuestionsFormateur from "./pages/QuestionsFormateur";
 
 // Redirige vers l espace adapté selon le rôle de la personne connectée.
 function RouteProtegee({ children, rolesAutorises }) {
@@ -49,6 +50,7 @@ function AppRoutes() {
       <Route path="/formateur" element={<RouteProtegee rolesAutorises={rolesFormateur}><EspaceFormateur /></RouteProtegee>} />
       <Route path="/formateur/formations" element={<RouteProtegee rolesAutorises={rolesFormateur}><FormationsFormateur /></RouteProtegee>} />
       <Route path="/formateur/formations/:id" element={<RouteProtegee rolesAutorises={rolesFormateur}><DetailFormationFormateur /></RouteProtegee>} />
+      <Route path="/formateur/questions" element={<RouteProtegee rolesAutorises={rolesFormateur}><QuestionsFormateur /></RouteProtegee>} />
     </Routes>
   );
 }
@@ -62,3 +64,5 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+

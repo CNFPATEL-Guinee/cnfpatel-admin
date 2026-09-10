@@ -39,6 +39,7 @@ export default function EspaceFormateur() {
       <nav style={styles.nav}>
         <Link to="/formateur" style={styles.lienActif}>Mes sessions</Link>
         <Link to="/formateur/formations" style={styles.lien}>Mes formations</Link>
+        <Link to="/formateur/questions" style={styles.lien}>Questions</Link>
       </nav>
 
       <main style={styles.contenu(estMobile)}>
@@ -127,3 +128,4 @@ const styles = {
   }),
   badgeTerminee: { padding: "6px 12px", backgroundColor: "#f3f4f6", color: "#9ca3af", borderRadius: "8px", fontSize: "13px" },
 };
+

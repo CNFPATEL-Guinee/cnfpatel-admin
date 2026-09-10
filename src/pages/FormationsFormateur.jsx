@@ -32,6 +32,7 @@ export default function FormationsFormateur() {
       <nav style={styles.nav}>
         <Link to="/formateur" style={styles.lien}>Mes sessions</Link>
         <Link to="/formateur/formations" style={styles.lienActif}>Mes formations</Link>
+        <Link to="/formateur/questions" style={styles.lien}>Questions</Link>
       </nav>
 
       <main style={styles.contenu}>
@@ -71,4 +72,5 @@ const styles = {
   grille: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px", marginTop: "16px" },
   carteFormation: { backgroundColor: "white", borderRadius: "12px", padding: "20px", textDecoration: "none", color: "#1F3864", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", display: "block" },
 };
+
 
