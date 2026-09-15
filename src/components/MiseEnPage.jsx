@@ -16,6 +16,7 @@ export default function MiseEnPage({ children }) {
     { chemin: "/formateurs", label: "Formateurs", icone: "🎓" },
     { chemin: "/certificats", label: "Certificats", icone: "🏆" },
     { chemin: "/notifications", label: "Notifications", icone: "🔔" },
+    { chemin: "/apropos", label: "A propos", icone: "ℹ️" },
   ];
 
   const menuVisible = !estMobile || menuOuvert;

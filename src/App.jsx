@@ -1,4 +1,4 @@
-ï»¿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Connexion from "./pages/Connexion";
 import TableauDeBord from "./pages/TableauDeBord";
@@ -11,12 +11,13 @@ import Formateurs from "./pages/Formateurs";
 import Certificats from "./pages/Certificats";
 import Presences from "./pages/Presences";
 import Notifications from "./pages/Notifications";
+import APropos from "./pages/APropos";
 import EspaceFormateur from "./pages/EspaceFormateur";
 import FormationsFormateur from "./pages/FormationsFormateur";
 import DetailFormationFormateur from "./pages/DetailFormationFormateur";
 import QuestionsFormateur from "./pages/QuestionsFormateur";
 
-// Redirige vers l espace adaptÃ© selon le rÃ´le de la personne connectÃ©e.
+// Redirige vers l espace adapté selon le rôle de la personne connectée.
 function RouteProtegee({ children, rolesAutorises }) {
   const { utilisateur } = useAuth();
   if (!utilisateur) return <Navigate to="/connexion" replace />;
@@ -45,6 +46,7 @@ function AppRoutes() {
       <Route path="/certificats" element={<RouteProtegee rolesAutorises={rolesAdmin}><Certificats /></RouteProtegee>} />
       <Route path="/presences/:classeId" element={<RouteProtegee rolesAutorises={rolesAdmin}><Presences /></RouteProtegee>} />
       <Route path="/notifications" element={<RouteProtegee rolesAutorises={rolesAdmin}><Notifications /></RouteProtegee>} />
+      <Route path="/apropos" element={<RouteProtegee rolesAutorises={rolesAdmin}><APropos /></RouteProtegee>} />
 
       {/* Espace formateur */}
       <Route path="/formateur" element={<RouteProtegee rolesAutorises={rolesFormateur}><EspaceFormateur /></RouteProtegee>} />
@@ -64,5 +66,6 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
 
 
