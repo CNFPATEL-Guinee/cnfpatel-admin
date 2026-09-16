@@ -105,11 +105,48 @@ export default function Utilisateurs() {
     }
   }
 
+  async function changerStatut(id, statut) {
+    try {
+      await api.patch(`/admin/utilisateurs/${id}`, { statut });
+      await chargerUtilisateurs();
+    } catch (e) {
+      setErreur("Erreur lors de la mise à jour du statut.");
+    }
+  }
+
   const libelleRole = (r) => roles.find((x) => x.valeur === r)?.label || r;
+
+  const comptesEnAttente = utilisateurs.filter((u) => u.statut === "en_attente");
 
   return (
     <MiseEnPage>
       <h1 style={{ marginBottom: "24px" }}>Utilisateurs</h1>
+
+      {comptesEnAttente.length > 0 && (
+        <div style={styles.carteAttente}>
+          <h2 style={styles.titreAttente}>
+            ⏳ Comptes en attente d'approbation ({comptesEnAttente.length})
+          </h2>
+          {comptesEnAttente.map((u) => (
+            <div key={u._id} style={styles.ligneAttente}>
+              <div>
+                <strong>{u.prenom} {u.nom}</strong>
+                <span style={styles.detailAttente}>
+                  {u.telephone} — {libelleRole(u.role)}{u.rang ? ` (${u.rang})` : ""}
+                </span>
+              </div>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button onClick={() => changerStatut(u._id, "approuve")} style={styles.boutonApprouver}>
+                  ✓ Approuver
+                </button>
+                <button onClick={() => changerStatut(u._id, "refuse")} style={styles.boutonRefuser}>
+                  ✕ Refuser
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div style={styles.grille}>
         <div style={styles.carte}>
@@ -214,6 +251,12 @@ export default function Utilisateurs() {
 }
 
 const styles = {
+  carteAttente: { backgroundColor: "#FEF9E7", border: "1px solid #FCD34D", borderRadius: "12px", padding: "20px", marginBottom: "24px" },
+  titreAttente: { fontSize: "15px", marginTop: 0, marginBottom: "14px", color: "#92400E" },
+  ligneAttente: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderTop: "1px solid #FDE68A" },
+  detailAttente: { display: "block", fontSize: "12px", color: "#78716C", marginTop: "2px" },
+  boutonApprouver: { padding: "6px 12px", backgroundColor: "#15803d", color: "white", border: "none", borderRadius: "6px", fontSize: "12px", fontWeight: 600, cursor: "pointer" },
+  boutonRefuser: { padding: "6px 12px", backgroundColor: "transparent", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "6px", fontSize: "12px", cursor: "pointer" },
   grille: { display: "grid", gridTemplateColumns: "360px 1fr", gap: "24px", alignItems: "start" },
   carte: { backgroundColor: "white", borderRadius: "12px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" },
   titreCarte: { fontSize: "16px", marginTop: 0, marginBottom: "16px" },
@@ -225,14 +268,13 @@ const styles = {
   lienAnnuler: { background: "none", border: "none", color: "#6b7280", fontSize: "12px", cursor: "pointer", textDecoration: "underline" },
   succes: { backgroundColor: "#f0fdf4", color: "#15803d", padding: "10px", borderRadius: "8px", fontSize: "13px" },
   tableau: { width: "100%", borderCollapse: "collapse", tableLayout: "fixed" },
-  th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280" },
+  th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb",fontSize: "13px", color: "#6b7280" },
   thNom: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "180px" },
   thEtroit: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "100px" },
   thAction: { padding: "10px", borderBottom: "2px solid #e5e7eb", width: "40px" },
   td: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
-  tdEtroit: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px", width: "100px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" },
+  tdEtroit: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px", width: "100px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace:"nowrap" },
   tdAction: { padding: "10px", borderBottom: "1px solid #f3f4f6", width: "40px", textAlign: "center" },
   badge: { backgroundColor: "#f3f4f6", color: "#374151", padding: "3px 10px", borderRadius: "12px", fontSize: "12px" },
   badgeAdmin: { backgroundColor: "#DCE6F1", color: "#1F3864", padding: "3px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: 600 },
 };
-
