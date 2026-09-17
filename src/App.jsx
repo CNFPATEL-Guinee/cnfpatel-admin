@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+ï»¿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Connexion from "./pages/Connexion";
 import TableauDeBord from "./pages/TableauDeBord";
@@ -17,7 +17,7 @@ import FormationsFormateur from "./pages/FormationsFormateur";
 import DetailFormationFormateur from "./pages/DetailFormationFormateur";
 import QuestionsFormateur from "./pages/QuestionsFormateur";
 
-// Redirige vers l espace adapté selon le rôle de la personne connectée.
+// Redirige vers l espace adapte selon le role de la personne connectee.
 function RouteProtegee({ children, rolesAutorises }) {
   const { utilisateur } = useAuth();
   if (!utilisateur) return <Navigate to="/connexion" replace />;
@@ -66,6 +66,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-
-
-
