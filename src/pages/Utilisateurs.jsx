@@ -218,6 +218,7 @@ export default function Utilisateurs() {
                   <th style={styles.thEtroit}>Téléphone</th>
                   <th style={styles.thEtroit}>Rôle</th>
                   <th style={styles.thEtroit}>Rang</th>
+                  <th style={styles.thEtroit}>Statut</th>
                   <th style={styles.thAction}></th>
                   <th style={styles.thAction}></th>
                 </tr>
@@ -233,6 +234,10 @@ export default function Utilisateurs() {
                       </span>
                     </td>
                     <td style={styles.tdEtroit}>{u.rang || "—"}</td>
+                    <td style={styles.tdEtroit}>
+                      {u.statut === "refuse" && <span style={styles.badgeRefuse}>Refusé</span>}
+                      {u.statut === "en_attente" && <span style={styles.badgeAttente}>En attente</span>}
+                    </td>
                     <td style={styles.tdAction}>
                       <button onClick={() => commencerEdition(u)} style={styles.boutonModifier}>✏️</button>
                     </td>
@@ -277,4 +282,7 @@ const styles = {
   tdAction: { padding: "10px", borderBottom: "1px solid #f3f4f6", width: "40px", textAlign: "center" },
   badge: { backgroundColor: "#f3f4f6", color: "#374151", padding: "3px 10px", borderRadius: "12px", fontSize: "12px" },
   badgeAdmin: { backgroundColor: "#DCE6F1", color: "#1F3864", padding: "3px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: 600 },
+  badgeRefuse: { backgroundColor: "#fef2f2", color: "#dc2626", padding: "3px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: 600 },
+  badgeAttente: { backgroundColor: "#FEF9E7", color: "#92400E", padding: "3px 10px", borderRadius: "12px", fontSize: "12px", fontWeight: 600 },
 };
+
