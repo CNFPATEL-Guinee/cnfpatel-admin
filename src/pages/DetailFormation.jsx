@@ -218,7 +218,7 @@ export default function DetailFormation() {
               <button style={styles.bouton}>Ajouter le module</button>
             </form>
           </div>
-          <div style={styles.carte}>
+          <div style={{ ...styles.carte, ...styles.carteModulesListe }}>
             {chargement ? <p style={styles.gris}>Chargement...</p> : modules.length === 0 ? (
               <p style={styles.gris}>Aucun module pour le moment.</p>
             ) : (
@@ -377,6 +377,7 @@ const styles = {
   titreSection: { fontSize: "18px", marginBottom: "12px", color: "#1F3864" },
   grille: { display: "grid", gridTemplateColumns: "340px 1fr", gap: "24px", alignItems: "start" },
   carte: { backgroundColor: "white", borderRadius: "12px", padding: "24px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", overflowX: "auto" },
+  carteModulesListe: { maxHeight: "400px", overflowY: "auto" },
   thTitre: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "160px" },
   thEtroit: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280", width: "100px" },
   thAction: { padding: "10px", borderBottom: "2px solid #e5e7eb", width: "40px" },
@@ -400,4 +401,7 @@ const styles = {
   th: { textAlign: "left", padding: "10px", borderBottom: "2px solid #e5e7eb", fontSize: "13px", color: "#6b7280" },
   td: { padding: "10px", borderBottom: "1px solid #f3f4f6", fontSize: "14px" },
 };
+
+
+
 
