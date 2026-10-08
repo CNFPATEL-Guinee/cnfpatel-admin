@@ -1,10 +1,10 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import MiseEnPage from "../components/MiseEnPage";
 import { useIsMobile } from "../hooks/useIsMobile";
 import api from "../api/client";
 
-const rangs = ["Prefet", "Sous-prefet", "Secretaire-general", "Maire", "Chef-cabinet"];
+const rangs = ["Prefet", "Sous-prefet", "Secretaire-general", "Maire", "Chef-cabinet", "Gouverneur", "Autres"];
 
 export default function Formations() {
   const estMobile = useIsMobile();

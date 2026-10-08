@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MiseEnPage from "../components/MiseEnPage";
 import api from "../api/client";
 
@@ -9,7 +9,7 @@ const roles = [
   { valeur: "admin_national", label: "Admin national" },
 ];
 
-const rangs = ["Prefet", "Sous-prefet", "Secretaire-general", "Maire", "Chef-cabinet"];
+const rangs = ["Prefet", "Sous-prefet", "Secretaire-general", "Maire", "Chef-cabinet", "Gouverneur", "Autres"];
 
 export default function Utilisateurs() {
   const [utilisateurs, setUtilisateurs] = useState([]);
